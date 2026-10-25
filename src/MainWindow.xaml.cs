@@ -240,6 +240,7 @@ namespace DataSweeper
                 Status.Text = "Cloud hand-off code " + code + " — approve it in the browser";
 
                 string? token = null;
+                string? paidToken = null;
                 var deadline = DateTime.UtcNow.AddMinutes(10);
                 while (DateTime.UtcNow < deadline)
                 {
@@ -253,9 +254,13 @@ namespace DataSweeper
                     if (st != "approved") continue;
                     if (stDoc.RootElement.TryGetProperty("token", out var tk) && tk.ValueKind == JsonValueKind.String)
                         token = tk.GetString();
+                    if (stDoc.RootElement.TryGetProperty("paid_token", out var pt) && pt.ValueKind == JsonValueKind.String)
+                        paidToken = pt.GetString();
                     break;
                 }
                 if (string.IsNullOrEmpty(token)) throw new Exception("no approval inside 10 minutes");
+                if (string.IsNullOrEmpty(paidToken))
+                    throw new Exception("payment required — approve the device and pay on the page, then press Send to cloud again");
 
                 CloudStatus.Text = "Cloud: approved — uploading (scoped token, 15 min)…";
                 using var form = new MultipartFormDataContent();
@@ -265,6 +270,7 @@ namespace DataSweeper
                 form.Add(fileContent, "file", Path.GetFileName(_file));
                 using var upReq = new HttpRequestMessage(HttpMethod.Post, _baseUrl + "/api/v1/link/jobs") { Content = form };
                 upReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                upReq.Headers.Add("X-Paid-Token", paidToken);
                 using var upResp = await Http.SendAsync(upReq);
                 var upBody = await upResp.Content.ReadAsStringAsync();
                 if (!upResp.IsSuccessStatusCode) throw new Exception("upload " + (int)upResp.StatusCode + ": " + upBody);

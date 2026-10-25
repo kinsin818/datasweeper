@@ -15,7 +15,7 @@ Drop a CSV on the window and it reports, row by row and column by column:
 
 ## Run it
 
-Download `DataSweeper-v1.0.0-win-x64.zip` from the Releases page, unzip it anywhere, and start `DataSweeper.exe`.
+Download `DataSweeper-v1.0.1-win-x64.zip` from the Releases page, unzip it anywhere, and start `DataSweeper.exe`.
 
 Windows 10/11 x64. The build is self-contained: no .NET runtime install required.
 
@@ -36,6 +36,11 @@ The **Send to cloud** button hands the file to the AI Congress cleaning service:
 3. Once you approve there, the app receives a 15-minute token scoped to that one upload, sends the file, and imports the result CSV back into the grid.
 
 ![Approval page](docs/screenshot-approval.png)
+
+Cloud cleaning is the paid tier (3 USD through Gumroad). The approval page opens the
+checkout, notices the purchase by itself once Gumroad confirms it, and hands the app a
+15-minute cleaning token; the app sends that token with the upload. Without a purchase
+the service answers `403 payment required`.
 
 The token cannot be used for anything else, and it is bound to the exact bytes that were hashed when the code was issued. Nothing is uploaded unless you press the button, and the URL field is editable if you run your own instance.
 
