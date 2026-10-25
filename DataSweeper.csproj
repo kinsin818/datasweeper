@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>DataSweeper</RootNamespace>
+    <AssemblyName>DataSweeper</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Version>1.0.0</Version>
+    <Authors>Sam Jin</Authors>
+    <Company>AI Congress Online</Company>
+    <Product>DataSweeper</Product>
+    <Description>Diagnostic desktop shell for dirty tabular data</Description>
+    <!-- the sources live in src/, so the WPF item types are declared below -->
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="src\App.xaml" />
+    <Page Include="src\MainWindow.xaml" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,108 @@
+<Window x:Class="DataSweeper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DataSweeper Diagnostics - Dirty Data Scan" Height="720" Width="980"
+        WindowStartupLocation="CenterScreen" Background="#F6F7FB">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border x:Name="DropZone" Grid.Row="0" CornerRadius="10" Height="110"
+                BorderThickness="2" BorderBrush="#9AA4B2" Background="#FFFFFF"
+                AllowDrop="True" DragOver="DropZone_DragOver" Drop="DropZone_Drop"
+                MouseLeftButtonUp="DropZone_Click">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                           Foreground="#5B6B84" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="Hint" Text="Drop a file here (or click to choose)" FontSize="16"
+                           Foreground="#33415C" Margin="0,6,0,2" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="FileLine" Text="No file selected" FontSize="12"
+                           Foreground="#78849B" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock x:Name="Status" Grid.Row="1" Text="Ready" FontSize="13"
+                   Foreground="#4A5568" Margin="2,10,2,0"/>
+
+        <Grid Grid.Row="2" Margin="0,8,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" x:Name="StartButton" Content="Scan for dirty data" Height="42" FontSize="16"
+                    Background="#2F6FED" Foreground="White" BorderThickness="0" Click="StartButton_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <TextBox Grid.Column="1" x:Name="CloudUrl" Width="210" Height="42" Margin="10,0,10,0"
+                     VerticalContentAlignment="Center" FontSize="12" Text="https://aicongressonline.com"/>
+            <Button Grid.Column="2" x:Name="CloudButton" Content="Send to cloud" Height="42" FontSize="15"
+                    Padding="16,0" Background="#0F9D58" Foreground="White" BorderThickness="0"
+                    IsEnabled="False" Click="CloudButton_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="3" CornerRadius="10" Background="#FFFFFF" BorderBrush="#E2E6EE" BorderThickness="1">
+            <Grid Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="Summary" Grid.Column="0" Text="Result" FontSize="14" FontWeight="SemiBold"
+                               Foreground="#22304A" VerticalAlignment="Center"/>
+                    <Button x:Name="ExportButton" Grid.Column="1" Content="Export report (CSV)" FontSize="13"
+                            Padding="12,5" Background="#EAF0FE" Foreground="#2F6FED"
+                            BorderBrush="#C7D6FB" BorderThickness="1" IsEnabled="False"
+                            Click="ExportButton_Click"/>
+                </Grid>
+
+                <Border Grid.Row="1" x:Name="CloudPanel" CornerRadius="8" Background="#F2F7FF"
+                        Margin="0,0,0,8" Padding="10,8" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock x:Name="CloudStatus" Text="Cloud: idle" FontSize="12" Foreground="#33415C"/>
+                        <TextBlock x:Name="CloudCode" Text="" FontSize="22" FontWeight="Bold"
+                                   FontFamily="Consolas" Foreground="#2F6FED" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <DataGrid x:Name="Results" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
+                          HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                          RowHeaderWidth="0" CanUserAddRows="False" FontSize="13"
+                          BorderThickness="0" AlternatingRowBackground="#F7F9FC"
+                          VerticalScrollBarVisibility="Visible"
+                          EnableRowVirtualization="True"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          ScrollViewer.CanContentScroll="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="80"/>
+                        <DataGridTextColumn Header="Row" Binding="{Binding Row}" Width="60"/>
+                        <DataGridTextColumn Header="Column" Binding="{Binding Column}" Width="110"/>
+                        <DataGridTextColumn Header="Issue" Binding="{Binding Issue}" Width="300"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
