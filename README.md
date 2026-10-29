@@ -2,7 +2,11 @@
 
 **Latest release: v1.0.2** — Windows 10/11 x64, self-contained (no .NET runtime needed).
 
+**[⬇ Download v1.0.2](https://github.com/kinsin818/datasweeper/releases/latest)** · **[Benchmark: five languages, one rule set](BENCHMARK.md)** · MIT
+
 A small Windows desktop shell for finding dirty rows in tabular files before you load them anywhere else.
+
+![Scan results](docs/screenshot-scan.png)
 
 Drop a CSV on the window and it reports, row by row and column by column:
 
@@ -12,8 +16,6 @@ Drop a CSV on the window and it reports, row by row and column by column:
 - non-numeric values in numeric columns (`age`, `amount`, `qty`, `price`)
 - ragged rows (column count differs from the header)
 - duplicate rows
-
-![Scan results](docs/screenshot-scan.png)
 
 ## Implementation
 
