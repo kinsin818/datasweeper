@@ -13,6 +13,13 @@ Drop a CSV on the window and it reports, row by row and column by column:
 
 ![Scan results](docs/screenshot-scan.png)
 
+## Implementation
+
+Our core is based on C# (.NET 8 WPF) for better UI and performance, with a
+[multi-language benchmark report](BENCHMARK.md): the same cell-classification
+pass implemented in five languages against a 50,000-row file, with the raw
+output of every run published.
+
 ## Run it
 
 Download `DataSweeper-v1.0.1-win-x64.zip` from the Releases page, unzip it anywhere, and start `DataSweeper.exe`.

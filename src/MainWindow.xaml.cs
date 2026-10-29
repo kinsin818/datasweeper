@@ -235,9 +235,22 @@ namespace DataSweeper
                 using var startDoc = JsonDocument.Parse(startBody);
                 var code = startDoc.RootElement.GetProperty("code").GetString() ?? "";
                 var verify = startDoc.RootElement.GetProperty("verify_url").GetString() ?? "";
+                var pay = startDoc.RootElement.TryGetProperty("pay_url", out var pu) && pu.ValueKind == JsonValueKind.String ? (pu.GetString() ?? "") : "";
+                var deviceToken = startDoc.RootElement.TryGetProperty("device_token", out var dt) && dt.ValueKind == JsonValueKind.String ? (dt.GetString() ?? "") : "";
                 CloudCode.Text = code;
-                CloudStatus.Text = "Cloud: waiting for approval in the browser — " + verify;
-                Status.Text = "Cloud hand-off code " + code + " — approve it in the browser";
+                var target = pay.Length > 0 ? pay : verify;
+                var opened = false;
+                if (target.Length > 0)
+                {
+                    try { Process.Start(new ProcessStartInfo(target) { UseShellExecute = true }); opened = true; }
+                    catch { opened = false; }
+                }
+                CloudStatus.Text = opened
+                    ? "Cloud: payment page opened in your browser — waiting for the payment to arrive…"
+                    : "Cloud: could not open a browser. Open this link to pay — " + target;
+                Status.Text = opened
+                    ? "Cloud hand-off code " + code + " — pay in the browser, this window does the rest"
+                    : "Cloud hand-off code " + code;
 
                 string? token = null;
                 string? paidToken = null;
@@ -245,13 +258,15 @@ namespace DataSweeper
                 while (DateTime.UtcNow < deadline)
                 {
                     await Task.Delay(2000);
-                    using var stResp = await Http.GetAsync(_baseUrl + "/api/v1/link/status?code=" + Uri.EscapeDataString(code));
+                    var statusUrl = _baseUrl + "/api/v1/link/status?code=" + Uri.EscapeDataString(code) +
+                                    (deviceToken.Length > 0 ? "&device_token=" + Uri.EscapeDataString(deviceToken) : "");
+                    using var stResp = await Http.GetAsync(statusUrl);
                     var stBody = await stResp.Content.ReadAsStringAsync();
                     if (!stResp.IsSuccessStatusCode) continue;
                     using var stDoc = JsonDocument.Parse(stBody);
                     var st = stDoc.RootElement.GetProperty("status").GetString();
                     if (st == "expired") throw new Exception("the code expired before approval");
-                    if (st != "approved") continue;
+                    if (st != "approved" && st != "paid") continue;
                     if (stDoc.RootElement.TryGetProperty("token", out var tk) && tk.ValueKind == JsonValueKind.String)
                         token = tk.GetString();
                     if (stDoc.RootElement.TryGetProperty("paid_token", out var pt) && pt.ValueKind == JsonValueKind.String)
@@ -305,13 +320,31 @@ namespace DataSweeper
             }
             catch (Exception ex)
             {
-                CloudStatus.Text = "Cloud: failed — " + ex.Message;
-                Status.Text = "Cloud hand-off failed (local scan is unaffected)";
+                CloudStatus.Text = "Cloud: " + FriendlyCloudError(ex.Message);
+                Status.Text = "Cloud hand-off failed — your local scan and report are unaffected";
             }
             finally
             {
                 CloudButton.IsEnabled = true;
             }
+        }
+
+        private static string FriendlyCloudError(string raw)
+        {
+            var m = (raw ?? "").ToLowerInvariant();
+            if (m.Contains("invalid license") || m.Contains("license not recognised"))
+                return "that licence code doesn't match any purchase. Copy the code from your Gumroad receipt and try again.";
+            if (m.Contains("payment required"))
+                return "the payment hasn't landed yet. Finish the checkout in your browser, then press Send to cloud again.";
+            if (m.Contains("expired"))
+                return "this hand-off code has expired. Press Send to cloud to start a fresh one.";
+            if (m.Contains("no approval inside"))
+                return "we didn't see the payment within 10 minutes. Press Send to cloud to try again.";
+            if (m.Contains("413") || m.Contains("too large"))
+                return "this file is larger than the plan allows (5 MB on the free tier).";
+            if (m.Contains("401") || m.Contains("403"))
+                return "the server didn't accept this request. Make sure you're using the email you paid with, then try again.";
+            return "we couldn't reach the server just now. Please try again in a minute.";
         }
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
