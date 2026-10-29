@@ -1,5 +1,7 @@
 # DataSweeper Diagnostics
 
+**Latest release: v1.0.2** — Windows 10/11 x64, self-contained (no .NET runtime needed).
+
 A small Windows desktop shell for finding dirty rows in tabular files before you load them anywhere else.
 
 Drop a CSV on the window and it reports, row by row and column by column:
@@ -22,7 +24,7 @@ output of every run published.
 
 ## Run it
 
-Download `DataSweeper-v1.0.1-win-x64.zip` from the Releases page, unzip it anywhere, and start `DataSweeper.exe`.
+Download `DataSweeper-v1.0.2-win-x64.zip` from the Releases page, unzip it anywhere, and start `DataSweeper.exe`.
 
 Windows 10/11 x64. The build is self-contained: no .NET runtime install required.
 
